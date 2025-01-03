@@ -21,7 +21,8 @@ app.listen(PORT, () => {
 });
 
 
-app.use("/api/public", express.static("./app/image/slip"));
+app.use("/api/public", express.static("/uploads"));
+
 
 
 require("./app/routes/auth.routes")(app);

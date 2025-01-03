@@ -119,6 +119,9 @@ const logout  = async (req, res) => {
 
 };
 
+
+
+
 exports.reg = reg;
 exports.login = login;
 exports.logout = logout;
