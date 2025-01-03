@@ -79,16 +79,22 @@ const login = async (req, res) => {
      var token = jwt.sign({ id: user.user_id }, config.secret, {
        expiresIn: 86400,
      });
-
-     return res.status(200).send({
-        user: user,
-        accessToken: token,
-        code: 200,
-      });
-
  
-    
-     
+     res
+       .status(200)
+       .cookie("accessToken", token, {
+         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 1),
+         httpOnly: true,
+         sameSite: "none",
+         secure: process.env.NODE_ENV === "production", // Use secure flag in production
+       })
+       .send({
+         id: user.user_id,
+         name: user.name,
+         email: user.email,
+         status: user.status,
+         accessToken: token,
+       });
    } catch (err) {
      res.status(500).send({
        message: "Some error occurred while logging in the User.",
