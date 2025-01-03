@@ -21,7 +21,10 @@ app.listen(PORT, () => {
 });
 
 
-app.use("/api/public", express.static("/uploads"));
+// app.use("/api/public", express.static("/uploads"));
+
+app.use("/api/public", express.static(path.join(__dirname, "uploads")));
+
 
 
 
