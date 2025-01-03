@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+enum UserStatus {
+  active
+  inactive
+}
+
+// Define the User model
+model User {
+  id        Int        @id @default(autoincrement()) // Primary key
+  username  String     @db.VarChar(50)               // Username with max length 50
+  password  String     @db.VarChar(255)              // Password with max length 255
+  name      String     @db.VarChar(100)              // Name with max length 100
+  email     String     @db.VarChar(100)              // Email with max length 100
+  status    UserStatus @default(active)              // Enum for user status with default 'active'
+  created_at DateTime  @default(now())               // Timestamp with current time as default
+}
+
+// schema.prisma
+
+model Room {
+  id           Int       @id @default(autoincrement()) // Primary key
+  room_number  String    @db.VarChar(50)               // Room number with max length 50
+  location     String    @db.VarChar(100)              // Location with max length 100
+  status       String    @default("available")         // Status with default value 'available'
+  created_at   DateTime  @default(now())               // Timestamp with current time as default
+  
+  invoices     Invoice[] @relation("RoomInvoices")     // Relation to Invoice model (one room has many invoices)
+}
+
+model Invoice {
+  id               Int      @id @default(autoincrement())  // Primary key
+  invoice_date     DateTime @default(now())                // Timestamp with current time as default
+  room_fee         Decimal  @db.Decimal(10, 2)             // Room fee
+  water_fee        Decimal  @db.Decimal(10, 2)             // Water fee
+  electricity_fee  Decimal  @db.Decimal(10, 2)             // Electricity fee
+  other_expenses   Decimal  @db.Decimal(10, 2) @default(0) // Other expenses with default 0
+  status           String   @default("unpaid")            // Status with default value 'unpaid'
+  payment_proof    String?  @db.VarChar(255)               // Payment proof (nullable)
+  
+  room_id          Int      // Foreign key to Room
+  room             Room     @relation("RoomInvoices", fields: [room_id], references: [id]) // Relation to Room
+}
